@@ -1,0 +1,7 @@
+[Set]
+Type=10
+GroupNum=1
+[group1]
+AMMAIN002014102201.ZGYL.NLD=程序
+main.NLD=主程序
+TTYYPARA.ini=参数文件

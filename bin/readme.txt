@@ -1,0 +1,16 @@
+ammain.8xx0.rom  	主控程序,用于管理所有的子应用程序以及TMS程序管理.
+alpubl.8xx0.rom		公共库程序,提供所有的子应用程序调用的库函数.
+altmsl.8xx0.rom		TMS程序,在子应用程序包含TMS时,需要调用的TMS库函数.
+alemvl.8xx0.rom		EMV程序,在子应用程序包含EMV时,需要调用的EMV库函数.
+aa.8xx0.rom		子应用程序,当前开发的应用程序.
+capkfile.dat		在子应用程序包含EMV时用到的公钥文件
+termaid.dat		在子应用程序包含EMV时用到的AID文件
+termpara.dat 		在子应用程序包含EMV时用到的EMV参数文件
+config.ini		POS参数文件(可选)
+cardlist.ini		卡表文件(可选)
+data1.ini		数据文件1(可选)
+data2.ini		数据文件2(可选)
+data3.ini		数据文件3(可选)
+filecfg.list		多应用下载列表
+bios.rom		底层bios文件
+bootlogo.bmp		开机logo文件

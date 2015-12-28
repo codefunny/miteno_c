@@ -1,0 +1,4 @@
+---- LuaFirstRunChk Matches (3 in 3 files) ----
+128X64.lua.bak (bin):function LuaFirstRunChk()
+320X240.lua.bak (bin):function LuaFirstRunChk()
+Param.c (src):	PubLuaDisplay("LuaFirstRunChk");

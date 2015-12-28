@@ -1,0 +1,13 @@
+[DownloadInfo]
+strMachineType=NL-GP000
+cType=U
+uiKeyExpiredDate=
+[AppInfo]
+strAppName=中国银联ZGYL
+strVerBuf=313205
+iSeriNo=11
+strBuildTime=20141104
+bIsMaster=0
+sReverse=1,0,0
+[Extended]
+strExtended=
