@@ -238,6 +238,7 @@ typedef struct
 	char szCodeUrl[200+1];		/**<客户URL */
 	char szPosInfo[100];		/**<POS信息*/
 	char szAdvertisement[256];	/**<广告内容*/
+	char szTransName[32];		/**<交易名称*/
 
 	/**
 	* 以下为附加的交易数据元内容
@@ -343,7 +344,7 @@ extern int MagPanjintong(void);
 extern int MagBalance(char cTransType);
 
 extern int DoReversal(void);
-
+extern int MagAllpayBarcode(void);
 
 
 #endif

@@ -27,7 +27,7 @@ extern int PrintParam(void);
 extern int Reprint(void);
 extern void GetBankName(const char *,char *, char);
 extern int DealPrintLimit(void);
-extern void GetTransNameForTP(char, char *, char *);
+extern void GetTransNameForTP(const STWATER *, char *, char *);
 extern int Print2DScan(char *pszAscInfo);
 extern int PrintImage(PrintDataInfo stDataInfo);
 #endif

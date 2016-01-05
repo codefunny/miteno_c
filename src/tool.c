@@ -495,7 +495,7 @@ static int Do_Scan(int nTimeOut, char * pszScanStr)
 #define SCAN_IOCS_TRIG _IO(SCANNER_DEV_MAGIC,1)
 #define SCAN_IOCS_EXIT _IO(SCANNER_DEV_MAGIC,2)
 
-static int Inner_Scan(int nTimeOut, char * pszScanStr)
+int Inner_Scan(int nTimeOut, char * pszScanStr,  int nMax, char *pszContent, char *pszTitle, YESORNO cIsVerify)
 {
 	int nLen = 0;
 	int nRet;
@@ -505,6 +505,7 @@ static int Inner_Scan(int nTimeOut, char * pszScanStr)
 	time_t oldtime,changetime;
 	char szContent[64];
 	char szBarCode[256];
+	char szBarCodeTmp[128];
 
 	memset(szBarCode, 0, sizeof(szBarCode));
 	
@@ -540,7 +541,33 @@ static int Inner_Scan(int nTimeOut, char * pszScanStr)
 			ioctl(fScanner,SCAN_IOCS_EXIT);
 			return APP_QUIT;
 		}
-		
+
+		memset(szBarCode, 0, sizeof(szBarCode));
+		if(PubIsDigitChar(nRet) == APP_SUCC)
+		{
+			szBarCode[0] = nRet;
+			if (PubInputDlg(pszTitle, pszContent, szBarCode, &nLen, 1, nMax, nTimeOut, INPUT_MODE_STRING) != APP_SUCC)
+			{	
+				ioctl(fScanner,SCAN_IOCS_EXIT);
+				return APP_QUIT;
+			}
+			if (cIsVerify == YES)
+			{
+				memset(szBarCodeTmp, 0, sizeof(szBarCodeTmp));
+				if(PubInputDlg(pszTitle, "请再输入一次", szBarCodeTmp, &nLen, 1, nMax, nTimeOut, INPUT_MODE_STRING) != APP_SUCC)
+				{
+					return APP_QUIT;
+				}
+				if(strcmp(szBarCodeTmp, szBarCode) != 0)
+				{
+					PubMsgDlg(pszTitle, "两次输入号码不同", 0, 3 );
+					return APP_QUIT;
+				}
+			}
+			strcpy(pszScanStr, szBarCode);
+			return APP_SUCC;
+		}
+	
 		nRet = NDK_PortRead(nAux, sizeof(szBarCode) - 1, szBarCode, 30, &nLen);
 		
 		if(nRet == NDK_OK)
@@ -887,99 +914,88 @@ int ScanBarCode(char *pszTitle, char *pszContent, int nMax, char * pszBarCode, Y
 	char szBarCode[128];
 	char szBarCodeTmp[128];
 
-	if(GetVarIsOutsideScanner() == YES)
-	{
-		PubClear2To4();
-		PubDisplayStr(DISPLAY_MODE_LEFT, 2, 1, pszContent);
-		PubDisplayStr(DISPLAY_MODE_LEFT, 3, 1, "或用扫描枪扫描");
-		PubUpdateWindow();
-		
-		nAux = SCANAUX;
-		nRet = NDK_PortOpen(nAux, "9600");
-		NDK_PortClrBuf(nAux);
-	}
-	else
-	{	
-		PubClear2To4();
-		PubDisplayStr(DISPLAY_MODE_LEFT, 2, 1, pszContent);
-		PubDisplayStr(DISPLAY_MODE_LEFT, 3, 1, "或按F3使用扫描枪");
-		PubUpdateWindow();
-	}
+	PubClear2To4();
+	PubDisplayStr(DISPLAY_MODE_LEFT, 2, 1, pszContent);
+	PubDisplayStr(DISPLAY_MODE_LEFT, 3, 1, "或使用扫描枪扫描");
+	PubUpdateWindow();
+
+	
 
 	while(1)
 	{
-		//按键
-		nKeycode = 0;
-		memset(szBarCode, 0, sizeof(szBarCode));
-		
-		nKeycode = PubKbHit();
-		if (nKeycode == KEY_ESC)
-		{
-			NDK_PortClose(nAux);
-			return APP_QUIT;
-		}
-		
-		if(PubIsDigitChar(nKeycode) == APP_SUCC)
-		{
-			szBarCode[0] = nKeycode;
-			if (PubInputDlg(pszTitle, pszContent, szBarCode, &nLen, 1, nMax, nTimeOut, INPUT_MODE_STRING) != APP_SUCC)
+		if(GetVarIsOutsideScanner() == YES)
+		{		
+			//按键
+			nKeycode = 0;
+			memset(szBarCode, 0, sizeof(szBarCode));
+			
+			nKeycode = PubKbHit();
+			if (nKeycode == KEY_ESC)
 			{
+				NDK_PortClose(nAux);
 				return APP_QUIT;
 			}
-			if (cIsVerify == YES)
+			
+			if(PubIsDigitChar(nKeycode) == APP_SUCC)
 			{
-				memset(szBarCodeTmp, 0, sizeof(szBarCodeTmp));
-				if(PubInputDlg(pszTitle, "请再输入一次", szBarCodeTmp, &nLen, 1, nMax, nTimeOut, INPUT_MODE_STRING) != APP_SUCC)
+				szBarCode[0] = nKeycode;
+				if (PubInputDlg(pszTitle, pszContent, szBarCode, &nLen, 1, nMax, nTimeOut, INPUT_MODE_STRING) != APP_SUCC)
 				{
 					return APP_QUIT;
 				}
-				if(strcmp(szBarCodeTmp, szBarCode) != 0)
+				if (cIsVerify == YES)
 				{
-					PubMsgDlg(pszTitle, "两次输入号码不同", 0, 3 );
-					return APP_QUIT;
-				}
-			}
-			strcpy(pszBarCode, szBarCode);
-			return APP_SUCC;
-		}
-		else if(GetVarIsOutsideScanner() == YES)
-		{
-			nRet = NDK_ERR;
-			nLen = 0;
-			
-			if (NDK_PortReadLen(nAux, &nLen) != NDK_OK)
-			{
-				NDK_PortClrBuf(nAux);
-			}
-			if(nLen > 0)
-			{
-				nRet = NDK_PortRead(nAux, sizeof(szBarCode) - 1, szBarCode, 100, &nLen);
-				//PrintDebugData(szBarCode, nLen);
-			}
-			
-			if(nRet == NDK_OK)
-			{
-				PubDelSymbolFromStr((uchar*)szBarCode, 0x0D);
-				PubDelSymbolFromStr((uchar*)szBarCode, 0x0A);
-				if (strlen(szBarCode) > nMax)
-				{
-					return APP_FAIL;
+					memset(szBarCodeTmp, 0, sizeof(szBarCodeTmp));
+					if(PubInputDlg(pszTitle, "请再输入一次", szBarCodeTmp, &nLen, 1, nMax, nTimeOut, INPUT_MODE_STRING) != APP_SUCC)
+					{
+						return APP_QUIT;
+					}
+					if(strcmp(szBarCodeTmp, szBarCode) != 0)
+					{
+						PubMsgDlg(pszTitle, "两次输入号码不同", 0, 3 );
+						return APP_QUIT;
+					}
 				}
 				strcpy(pszBarCode, szBarCode);
-				NDK_PortClose(nAux);
-
 				return APP_SUCC;
 			}
-		}
-		else if (nKeycode == KEY_F3)
-		{	
-			PubClearAll();
-			PubDisplayTitle(pszTitle);
-			PubDisplayGen(2, "请扫描");
-			PubDisplayGen(3, "一维或二维码");
-			PubUpdateWindow();
+			else if(GetVarIsOutsideScanner() == YES)
+			{	
+				nAux = SCANAUX;
+				nRet = NDK_PortOpen(nAux, "9600");
+				NDK_PortClrBuf(nAux);
+
+				nRet = NDK_ERR;
+				nLen = 0;
+				
+				if (NDK_PortReadLen(nAux, &nLen) != NDK_OK)
+				{
+					NDK_PortClrBuf(nAux);
+				}
+				if(nLen > 0)
+				{
+					nRet = NDK_PortRead(nAux, sizeof(szBarCode) - 1, szBarCode, 100, &nLen);
+					//PrintDebugData(szBarCode, nLen);
+				}
+				
+				if(nRet == NDK_OK)
+				{
+					PubDelSymbolFromStr((uchar*)szBarCode, 0x0D);
+					PubDelSymbolFromStr((uchar*)szBarCode, 0x0A);
+					if (strlen(szBarCode) > nMax)
+					{
+						return APP_FAIL;
+					}
+					strcpy(pszBarCode, szBarCode);
+					NDK_PortClose(nAux);
 			
-			nRet = Inner_Scan(nTimeOut, szBarCode);
+					return APP_SUCC;
+				}
+			}
+		}
+		else
+		{
+			nRet = Inner_Scan(nTimeOut, szBarCode, nMax, pszContent, pszTitle, cIsVerify);
 			if(nRet != APP_SUCC)
 			{
 				return APP_QUIT;
@@ -993,6 +1009,7 @@ int ScanBarCode(char *pszTitle, char *pszContent, int nMax, char * pszBarCode, Y
 			strcpy(pszBarCode, szBarCode);
 			return APP_SUCC;
 		}
+		
 	}
 
 	return APP_FAIL;

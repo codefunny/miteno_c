@@ -1781,14 +1781,13 @@ int NDK_AppGetInfo(const uchar *pszAppName, int nPos, ST_APPINFO *pstAppInfo, in
  *@li	\ref NDK_ERR_APP_NOT_EXIST "NDK_ERR_APP_NOT_EXIST" 	应用项不存在
 */
 int NDK_AppDel(const char *pszAppName);
-
 /**
  *@brief	运行后台服务程序
  *@param	pszAppName	应用名称。
  *@param	psArgv    应用运行参数
  *@param	cBlock   1 阻塞直到后台应用退出
                     0 并行运行
-
+#define 
  *@return
  *@li	NDK_OK				操作成功
  *@li	\ref NDK_ERR_PARA "NDK_ERR_PARA" 		参数非法

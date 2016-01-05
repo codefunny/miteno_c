@@ -550,7 +550,8 @@ int SysToWater(const STSYSTEM *pstSystem, STWATER *pstWater )
 	pstWater->cSendFlag = 0;					/**<上送标志0－未上送，0xFD－已上送,0xFF-上送失败*/
 	pstWater->cBatchUpFlag= 0;					/**<上送标志0－未上送，0xFD－已上送,0xFF-上送失败*/
 	strcpy(pstWater->szAdvertisement, pstSystem->szAdvertisement);//广告信息
-
+	strcpy(pstWater->szTransName, pstSystem->szTransName);//广告信息
+	
 	/**<int nAdditionLen;和char sAddition[100];由具体交易赋值给pstWater*/
 
 	return APP_SUCC;

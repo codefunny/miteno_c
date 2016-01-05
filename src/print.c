@@ -198,10 +198,10 @@ int _printwater( void *ptrPara )
 * @param out char *pszTransName2 交易类型对应的英文名称
 * @return 无
 */
-void GetTransNameForTP(char cTransType, char *pszTransName1, char *pszTransName2)
+void GetTransNameForTP(const STWATER *pstWater, char *pszTransName1, char *pszTransName2)
 {	
 
-	switch( cTransType )
+	switch( pstWater->cTransType )
 	{
 		case TRANS_COUPON_VERIFY:
 			strcpy(pszTransName1, "串码承兑");
@@ -360,11 +360,11 @@ void GetTransNameForTP(char cTransType, char *pszTransName1, char *pszTransName2
 			strcpy(pszTransName2, "Void for Bestpay");
 			break;
 		case TRANS_ALLPAY_CREATEANDPAY:
-			strcpy(pszTransName1, "都能付");
+			sprintf(pszTransName1, "都能付(%s)", pstWater->szTransName);
 			strcpy(pszTransName2, "Allpay");
 			break;
 		case TRANS_ALLPAY_REFUND:
-			strcpy(pszTransName1, "都能付退货");
+			sprintf(pszTransName1, "都能付退货(%s)", pstWater->szTransName);
 			strcpy(pszTransName2, "Refund for Allpay");
 			break;
 		default:
@@ -1493,12 +1493,12 @@ int SetPrintData_Water(const STWATER *pstWater, int nReprintFlag, const int nCur
 	memset(szStr, 0, sizeof(szStr));
 	memset(szTmpStr, 0, sizeof(szTmpStr));
 
-	GetTransNameForTP( pstWater->cTransType, szStr, szTmpStr );
-	PubSetFieldValueFormat("TRANSTYPE_CN", "%s", szStr);
+	GetTransNameForTP( pstWater, szStr, szTmpStr );
+	PubSetFieldValueFormat("TRANSTYPE_CN", "%s", szStr);		
 	PubSetFieldValueFormat("TRANSTYPE_EN", "%s(%s)", szStr, szTmpStr);
- 	
-	GetTransNameForTP2( pstWater->cTransType, szTransAttrAndStatus, szStr, szTmpStr );
-	PubSetFieldValueFormat("TRANSTYPE_MITENO_CN", "%s", szStr);
+
+	//GetTransNameForTP2( pstWater->cTransType, szTransAttrAndStatus, szStr, szTmpStr );
+	//PubSetFieldValueFormat("TRANSTYPE_MITENO_CN", "%s", szStr);
  	
 	// 有效期
 	if (memcmp(pstWater->sExpDate, "\x00\x00", 2))
@@ -2721,7 +2721,7 @@ int SetAndPrint_Allwater(void *ptrPara)
 	int nWaterNum;
 	int i, nPrintNum = 30;
 	int nStartRecNo;
-	char szTmpStr[32];
+	char szTmpStr[64];
 	char szStr[32];
 	int *pnCurPrintRecNo;
 	char *pszModuleName = "PRINT_ALL_WATER";
@@ -2790,9 +2790,7 @@ int SetAndPrint_Allwater(void *ptrPara)
         	
 		// 类型
 		memset(szTmpStr, 0, sizeof(szTmpStr));
-		//GetTypeName(szTmpStr, stWater.cTransType);
-		//PubSetFieldValueFormat("TYPE", "%s",  szTmpStr);
-		GetTransNameForTP(stWater.cTransType, szTmpStr, szStr);	
+ 		GetTransNameForTP(&stWater, szTmpStr, szStr);
 		PubAddSymbolToStr(szTmpStr, 16, ' ', 1);
 		PubSetFieldValueFormat("TYPE", "%s",  szTmpStr);
         	

@@ -268,6 +268,11 @@ static int AppTrans(void)
 
 		
 		if (cMenuSel == 0)
+		{	
+			EnableDispDefault();
+			DisableDispDefault();
+		}
+		else
 		{
 			nRet = MenuFuncSel();
 			if (nRet == KEY_FUNC_APP_SELECT)
@@ -278,12 +283,6 @@ static int AppTrans(void)
 			{
 				continue;
 			}
-		}
-		else
-		{
-			EnableDispDefault();
-
-			DisableDispDefault();
 		}
 		cMenuSel = ~cMenuSel;
 	}
@@ -343,6 +342,110 @@ enum TRANSMEUN
 	BAIDU_PRECREATE_MENU,				/**<百度被扫*/
 	
 };
+
+//平台被扫菜单
+static int DoPREPlatformMenu(char * pszMenuResource)
+{
+	char szTmp[128];
+
+	memset(szTmp, 0, sizeof(szTmp));
+	sprintf(szTmp, "平台被扫,%d/", WX_DISP);
+	strcat(pszMenuResource, szTmp);
+
+	//if(GetTieTieSwitchOnoff(TRANS_PRECREATE)== YES)
+	{
+		memset(szTmp, 0, sizeof(szTmp));
+		sprintf(szTmp, "****微信支付,%d/", PRECREATE_MENU);
+		strcat(pszMenuResource, szTmp);
+	}
+
+	//if(GetTieTieSwitchOnoff(TRANS_ALI_PRECREATE)== YES)
+	{
+		memset(szTmp, 0, sizeof(szTmp));
+		sprintf(szTmp, "****支付宝,%d/", ALIPAY_PRECREATE_MENU);
+		strcat(pszMenuResource, szTmp);
+	}
+
+	
+	if(GetTieTieSwitchOnoff(TRANS_BAIDU_PRECREATE)== YES)
+	{
+		memset(szTmp, 0, sizeof(szTmp));
+		sprintf(szTmp, "****百度钱包,%d/", BAIDU_PRECREATE_MENU);
+		strcat(pszMenuResource, szTmp);
+	}
+
+	
+	if(GetTieTieSwitchOnoff(TRANS_JD_PRECREATE)== YES)
+	{
+		memset(szTmp, 0, sizeof(szTmp));
+		sprintf(szTmp, "****京东钱包,%d/", JD_PRECREATE_MENU);
+		strcat(pszMenuResource, szTmp);
+	}
+
+	if(GetTieTieSwitchOnoff(TRANS_CREATEANDPAY)== YES)
+	{
+		memset(szTmp, 0, sizeof(szTmp));
+		sprintf(szTmp, "****大众点评,%d/", DZ_CREATEANDPAY_MENU);
+		strcat(pszMenuResource, szTmp);
+	}
+	
+}
+
+//平台主扫菜单
+static int DoPlatformMenu(char * pszMenuResource)
+{
+	char szTmp[128];
+
+	memset(szTmp, 0, sizeof(szTmp));
+	sprintf(szTmp, "平台主扫,%d/", WX_DISP);
+	strcat(pszMenuResource, szTmp);
+
+	if(GetTieTieSwitchOnoff(TRANS_CREATEANDPAY)== YES)
+	{
+		memset(szTmp, 0, sizeof(szTmp));
+		sprintf(szTmp, "****微信支付,%d/", CREATEANDPAY);
+		strcat(pszMenuResource, szTmp);
+	}
+
+	if(GetTieTieSwitchOnoff(TRANS_ALI_CREATEANDPAY)== YES)
+	{
+		memset(szTmp, 0, sizeof(szTmp));
+		sprintf(szTmp, "****支付宝,%d/", ALI_CREATEANDPAY_MENU);
+		strcat(pszMenuResource, szTmp);
+	}
+	
+	if(GetTieTieSwitchOnoff(TRANS_CREATEANDPAYBAIDU)== YES)
+	{
+		memset(szTmp, 0, sizeof(szTmp));
+		sprintf(szTmp, "****百度钱包,%d/", BAIDU_CREATEANDPAY_MENU);
+		strcat(pszMenuResource, szTmp);
+	}
+	
+	if(GetTieTieSwitchOnoff(TRANS_JD_CREATEANDPAY)== YES)
+	{
+		memset(szTmp, 0, sizeof(szTmp));
+		sprintf(szTmp, "****京东钱包,%d/", JD_CREATEANDPAY_MENU);
+		strcat(pszMenuResource, szTmp);
+	}
+
+	
+	if(GetTieTieSwitchOnoff(TRANS_CREATEANDPAY)== YES)
+	{
+		memset(szTmp, 0, sizeof(szTmp));
+		sprintf(szTmp, "****大众点评,%d/", DZ_PRECREATE_MENU);
+		strcat(pszMenuResource, szTmp);
+	}
+
+	if(GetTieTieSwitchOnoff(TRANS_BESTPAY_CREATEANDPAY)== YES)
+	{
+		memset(szTmp, 0, sizeof(szTmp));
+		sprintf(szTmp, "****翼支付,%d/", BESTPAY_CREATEANDPAY_MENU);
+		strcat(pszMenuResource, szTmp);
+	}
+	
+}
+
+
 
 static int DoWechatMenu(char * pszMenuResource)
 {
@@ -685,6 +788,60 @@ static int DoCouponMenu(char * pszMenuResource)
 }
 
 
+static int DoVoucherMenu(char * pszMenuResource)
+{
+	char szTmp[128];
+
+	memset(szTmp, 0, sizeof(szTmp));
+	sprintf(szTmp, "兑  券,%d/", COUPON_DISP);
+	strcat(pszMenuResource, szTmp);
+	
+	if(GetTieTieSwitchOnoff(TRANS_COUPON_MEITUAN)== YES)
+	{
+		memset(szTmp, 0, sizeof(szTmp));
+		sprintf(szTmp, "****美  团,%d/", MEITUAN_COUPON_MENU);
+		strcat(pszMenuResource, szTmp);
+	}
+
+	if(GetTieTieSwitchOnoff(TRANS_CREATEANDPAY)== YES)
+	{
+		memset(szTmp, 0, sizeof(szTmp));
+		sprintf(szTmp, "****大众兑券,%d/", DZ_COUPON_MENU);
+		strcat(pszMenuResource, szTmp);
+	}
+	if(GetTieTieSwitchOnoff(TRANS_CREATEANDPAY)== YES)
+	{
+		memset(szTmp, 0, sizeof(szTmp));
+		sprintf(szTmp, "****大众订单确认,%d/", DZ_COUPONCONFIRM_MENU);
+		strcat(pszMenuResource, szTmp);
+	}
+	
+	if(GetTieTieSwitchOnoff(TRANS_COUPON_VERIFY)== YES)
+	{
+		memset(szTmp, 0, sizeof(szTmp));
+		sprintf(szTmp, "****串码验券,%d/", COUPON_VERIFY_MENU);
+		strcat(pszMenuResource, szTmp);
+	}
+	
+	if(GetTieTieSwitchOnoff(TRANS_TEL_VERIFY)== YES)
+	{	
+		memset(szTmp, 0, sizeof(szTmp));
+		sprintf(szTmp, "****手机验券,%d/", TEL_VERIFY_MENU);
+		strcat(pszMenuResource, szTmp);
+	}
+	
+	if(GetTieTieSwitchOnoff(TRANS_CARD_VERIFY)== YES)
+	{
+		memset(szTmp, 0, sizeof(szTmp));
+		sprintf(szTmp, "****卡号验券,%d/", CARD_VERIFY_MENU);
+		strcat(pszMenuResource, szTmp);
+	}
+
+	return APP_SUCC;
+}
+
+
+
 /**
 * @brief 处理菜单
 * @param [out] pszMenuResource 菜单列表
@@ -698,7 +855,24 @@ static int DoCouponMenu(char * pszMenuResource)
 static int DoMenu(char * pszMenuResource)
 {
 	char szTmp[128];
+	//平台被扫菜单定制
+	DoPREPlatformMenu(pszMenuResource);
+	//平台主扫菜单定制
+	DoPlatformMenu(pszMenuResource);
+	
+	{
+		memset(szTmp, 0, sizeof(szTmp));
+		sprintf(szTmp, "查  询,%d/", ALLPAY_BALANCE_MENU);
+		strcat(pszMenuResource, szTmp);
+	}
 
+	
+	{
+		memset(szTmp, 0, sizeof(szTmp));
+		sprintf(szTmp, "退  货,%d/", ALLPAY_REFUND_MENU);
+		strcat(pszMenuResource, szTmp);
+	}
+#if 0
 	//微信支付菜单定制
 	DoWechatMenu(pszMenuResource);
 
@@ -710,13 +884,8 @@ static int DoMenu(char * pszMenuResource)
 
 	//京东钱包
 	DoJDMenu(pszMenuResource);
+#endif
 
-	if(GetTieTieSwitchOnoff(TRANS_COUPON_MEITUAN)== YES)
-	{
-		memset(szTmp, 0, sizeof(szTmp));
-		sprintf(szTmp, "美  团,%d/", MEITUAN_COUPON_MENU);
-		strcat(pszMenuResource, szTmp);
-	}
 
 #if 0	
 	//if(GetTieTieSwitchOnoff(TRANS_COUPON_MEITUAN)== YES)
@@ -751,30 +920,14 @@ static int DoMenu(char * pszMenuResource)
 		}
 	}
 #endif
-	if(GetTieTieSwitchOnoff(TRANS_BESTPAY_CREATEANDPAY)== YES)
-	{
-		memset(szTmp, 0, sizeof(szTmp));
-		sprintf(szTmp, "翼支付,%d/", BESTPAY_CREATEANDPAY_MENU);
-		strcat(pszMenuResource, szTmp);
-	}
 
-	if(GetTieTieSwitchOnoff(TRANS_PANJINTONG)== YES)
-	{
-		memset(szTmp, 0, sizeof(szTmp));
-		sprintf(szTmp, "盘锦通,%d/", PANJIN_MENU);
-		strcat(pszMenuResource, szTmp);
-	}
-#if 0
-	//if(GetTieTieSwitchOnoff(TRANS_ALLPAY_CREATEANDPAY)== YES)
-	{
-		memset(szTmp, 0, sizeof(szTmp));
-		sprintf(szTmp, "都能付,%d/", ALLPAY_CREATEANDPAY_MENU);
-		strcat(pszMenuResource, szTmp);
-	}
-#endif	
 	
 	//验券
-	DoCouponMenu(pszMenuResource);
+	//DoCouponMenu(pszMenuResource);
+
+	//兑卷
+	DoVoucherMenu(pszMenuResource);
+
 	
 	/*打印*/
 	memset(szTmp, 0, sizeof(szTmp));
@@ -794,10 +947,78 @@ static int DoMenu(char * pszMenuResource)
 
 
 
-static int DoOtherMenu(char * pszMenuResource)
+int DoOtherMenu(char * pszMenuResource)
 {
 	char szTmp[128];
+
 	
+	if(GetTieTieSwitchOnoff(TRANS_PANJINTONG)== YES)
+	{
+		memset(szTmp, 0, sizeof(szTmp));
+		sprintf(szTmp, "盘锦通,%d/", PANJIN_MENU);
+		strcat(pszMenuResource, szTmp);
+	}
+	
+	//查询
+	if(GetTieTieSwitchOnoff(TRANS_PRECREATE)== YES || GetTieTieSwitchOnoff(TRANS_CREATEANDPAY)== YES
+		|| GetTieTieSwitchOnoff(TRANS_CREATEANDPAYBAIDU)== YES || GetTieTieSwitchOnoff(TRANS_BAIDU_PRECREATE)== YES
+		|| GetTieTieSwitchOnoff(TRANS_JD_PRECREATE)== YES || GetTieTieSwitchOnoff(TRANS_JD_PRECREATE)== YES
+		|| GetTieTieSwitchOnoff(TRANS_ALI_CREATEANDPAY)== YES || GetTieTieSwitchOnoff(TRANS_ALI_PRECREATE)== YES
+		|| GetTieTieSwitchOnoff(TRANS_COUPON_MEITUAN)== YES
+		)
+	{
+		memset(szTmp, 0, sizeof(szTmp));
+		sprintf(szTmp, "交易查询,%d/", REFUND_MENU);
+		strcat(pszMenuResource, szTmp);
+	
+		if(GetTieTieSwitchOnoff(TRANS_PRECREATE)== YES || GetTieTieSwitchOnoff(TRANS_CREATEANDPAY)== YES)
+		{
+			memset(szTmp, 0, sizeof(szTmp));
+			sprintf(szTmp, "****微信查询,%d/", WECHAT_BALANCE_MENU);
+			strcat(pszMenuResource, szTmp);
+		}
+
+		if(GetTieTieSwitchOnoff(TRANS_ALI_CREATEANDPAY)== YES || GetTieTieSwitchOnoff(TRANS_ALI_PRECREATE)== YES)
+		{
+			memset(szTmp, 0, sizeof(szTmp));
+			sprintf(szTmp, "****支付宝,%d/", ALI_BALANCE_MENU);
+			strcat(pszMenuResource, szTmp);
+		}
+
+		if(GetTieTieSwitchOnoff(TRANS_CREATEANDPAYBAIDU)== YES || GetTieTieSwitchOnoff(TRANS_BAIDU_PRECREATE)== YES)
+		{
+			memset(szTmp, 0, sizeof(szTmp));
+			sprintf(szTmp, "****百度查询,%d/", BAIDU_BALANCE_MENU);
+			strcat(pszMenuResource, szTmp);
+		}
+
+		if(GetTieTieSwitchOnoff(TRANS_JD_PRECREATE)== YES || GetTieTieSwitchOnoff(TRANS_JD_CREATEANDPAY)== YES)
+		{
+			memset(szTmp, 0, sizeof(szTmp));
+			sprintf(szTmp, "****京东查询,%d/", JD_BALANCE_MENU);
+			strcat(pszMenuResource, szTmp);
+		}
+	
+		if(GetTieTieSwitchOnoff(TRANS_COUPON_MEITUAN)== YES)
+		{
+			memset(szTmp, 0, sizeof(szTmp));
+			sprintf(szTmp, "****美团查询,%d/", MEITUAN_BALANCE_MENU);
+			strcat(pszMenuResource, szTmp);
+		}
+		
+
+#if 0
+
+
+		if(GetTieTieSwitchOnoff(TRANS_COUPON_MEITUAN)== YES)
+		{
+			memset(szTmp, 0, sizeof(szTmp));
+			sprintf(szTmp, "****点评查询,%d/", DZ_BALANCE_MENU);
+			strcat(pszMenuResource, szTmp);
+		}
+#endif		
+	}
+
 	if(GetTieTieSwitchOnoff(TRANS_VOID_VERIFY)== YES)
 	{
 		memset(szTmp, 0, sizeof(szTmp));
@@ -859,13 +1080,6 @@ static int DoOtherMenu(char * pszMenuResource)
 		}
 #if 0	
 
-		{
-			memset(szTmp, 0, sizeof(szTmp));
-			sprintf(szTmp, "****都能付退货,%d/", ALLPAY_REFUND_MENU);
-			strcat(pszMenuResource, szTmp);
-		}
-		
-
 		//if(GetTieTieSwitchOnoff(TRANS_CREATEANDPAY)== YES)
 		{
 			memset(szTmp, 0, sizeof(szTmp));
@@ -884,69 +1098,6 @@ static int DoOtherMenu(char * pszMenuResource)
 
 	}
 
-	//查询
-	if(GetTieTieSwitchOnoff(TRANS_PRECREATE)== YES || GetTieTieSwitchOnoff(TRANS_CREATEANDPAY)== YES
-		|| GetTieTieSwitchOnoff(TRANS_CREATEANDPAYBAIDU)== YES || GetTieTieSwitchOnoff(TRANS_BAIDU_PRECREATE)== YES
-		|| GetTieTieSwitchOnoff(TRANS_JD_PRECREATE)== YES || GetTieTieSwitchOnoff(TRANS_JD_PRECREATE)== YES
-		|| GetTieTieSwitchOnoff(TRANS_ALI_CREATEANDPAY)== YES || GetTieTieSwitchOnoff(TRANS_ALI_PRECREATE)== YES
-		|| GetTieTieSwitchOnoff(TRANS_COUPON_MEITUAN)== YES
-		)
-	{
-		memset(szTmp, 0, sizeof(szTmp));
-		sprintf(szTmp, "交易查询,%d/", REFUND_MENU);
-		strcat(pszMenuResource, szTmp);
-	
-		if(GetTieTieSwitchOnoff(TRANS_PRECREATE)== YES || GetTieTieSwitchOnoff(TRANS_CREATEANDPAY)== YES)
-		{
-			memset(szTmp, 0, sizeof(szTmp));
-			sprintf(szTmp, "****微信查询,%d/", WECHAT_BALANCE_MENU);
-			strcat(pszMenuResource, szTmp);
-		}
-
-		if(GetTieTieSwitchOnoff(TRANS_ALI_CREATEANDPAY)== YES || GetTieTieSwitchOnoff(TRANS_ALI_PRECREATE)== YES)
-		{
-			memset(szTmp, 0, sizeof(szTmp));
-			sprintf(szTmp, "****支付宝,%d/", ALI_BALANCE_MENU);
-			strcat(pszMenuResource, szTmp);
-		}
-
-		if(GetTieTieSwitchOnoff(TRANS_CREATEANDPAYBAIDU)== YES || GetTieTieSwitchOnoff(TRANS_BAIDU_PRECREATE)== YES)
-		{
-			memset(szTmp, 0, sizeof(szTmp));
-			sprintf(szTmp, "****百度查询,%d/", BAIDU_BALANCE_MENU);
-			strcat(pszMenuResource, szTmp);
-		}
-
-		if(GetTieTieSwitchOnoff(TRANS_JD_PRECREATE)== YES || GetTieTieSwitchOnoff(TRANS_JD_CREATEANDPAY)== YES)
-		{
-			memset(szTmp, 0, sizeof(szTmp));
-			sprintf(szTmp, "****京东查询,%d/", JD_BALANCE_MENU);
-			strcat(pszMenuResource, szTmp);
-		}
-	
-		if(GetTieTieSwitchOnoff(TRANS_COUPON_MEITUAN)== YES)
-		{
-			memset(szTmp, 0, sizeof(szTmp));
-			sprintf(szTmp, "****美团查询,%d/", MEITUAN_BALANCE_MENU);
-			strcat(pszMenuResource, szTmp);
-		}
-
-#if 0
-
-		{
-			memset(szTmp, 0, sizeof(szTmp));
-			sprintf(szTmp, "****都能付查询,%d/", ALLPAY_BALANCE_MENU);
-			strcat(pszMenuResource, szTmp);
-		}
-
-		if(GetTieTieSwitchOnoff(TRANS_COUPON_MEITUAN)== YES)
-		{
-			memset(szTmp, 0, sizeof(szTmp));
-			sprintf(szTmp, "****点评查询,%d/", DZ_BALANCE_MENU);
-			strcat(pszMenuResource, szTmp);
-		}
-#endif		
-	}
 
 	return APP_SUCC;
 }
@@ -1008,9 +1159,6 @@ static int MenuOther(void)
 		case BESTPAY_REFUND_MENU:
 			MagBarBestpayCodeRefund();
 			break;
-		case ALLPAY_REFUND_MENU:
-			MagAllPayRefund();
-			break;
 		//查询
 		case WECHAT_BALANCE_MENU:
 			MagBalance(TRANS_BALANCE_WECHAT);
@@ -1030,8 +1178,8 @@ static int MenuOther(void)
 		case DZ_BALANCE_MENU:
 			MagBalance(TRANS_BALANCE_DZ);
 			break;
-		case ALLPAY_BALANCE_MENU:
-			MagBalance(TRANS_BALANCE_ALLPAY);
+		case PANJIN_MENU:
+			MagPanjintong();
 			break;
 		default:
 			break;
@@ -1187,9 +1335,6 @@ static int MenuFuncSel(void)
 		case MEITUAN_COUPON_MENU:
 			MagMeituanVeriCoupon();
 			break;
-		case PANJIN_MENU:
-			MagPanjintong();
-			break;
 			
 		case DZ_PRECREATE_MENU:
 			MagDazhongScanQrCodePay();
@@ -1214,7 +1359,13 @@ static int MenuFuncSel(void)
 			break;
 		case OTHERS:
 			MenuOther();
-			break;
+			break;		
+		case ALLPAY_REFUND_MENU:
+			MagAllPayRefund();
+			break;		
+		case ALLPAY_BALANCE_MENU:
+			MagBalance(TRANS_BALANCE_ALLPAY);
+			break;	
 		default:
 			break;
 		}

@@ -4543,14 +4543,12 @@ int MagDazhongConfirm(void)
 	char *pszTitle = "大众点评订单确认";
 	STSYSTEM stSystem;
 	int nRet;
-	int nLen;
 	int nTagSum=0;
 	char sPackBuf[MAX_PACK_SIZE]; 
 	int nPackLen=0;
 	STWATER stWater;
 	STCOUPONMEITUAN stCoupon;
 	STREVERSAL stReversal;
-	char szTmp[64];
 
 	memset((char *)&stSystem, 0, sizeof(stSystem));
 	memset((char *)&stWater, 0, sizeof(stWater));

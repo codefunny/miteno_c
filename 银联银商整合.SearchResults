@@ -1,4 +1,3 @@
----- LuaFirstRunChk Matches (3 in 3 files) ----
-128X64.lua.bak (bin):function LuaFirstRunChk()
-320X240.lua.bak (bin):function LuaFirstRunChk()
-Param.c (src):	PubLuaDisplay("LuaFirstRunChk");
+---- Inner_Scan Matches (2 in 1 files) ----
+Tool.c (src):static int Inner_Scan(int nTimeOut, char * pszScanStr,  int nMax, char *pszContent)
+Tool.c (src):			nRet = Inner_Scan(nTimeOut, szBarCode, nMax, pszContent);

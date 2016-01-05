@@ -43,7 +43,7 @@ end
 --end
 -------------------------------------------
 function LuaMenuFunc(szMenu)
-	return UI.PubMenu("Ã·Ì©Åµ", 2, 5, 0, 0, 60, 2, szMenu);
+	return UI.PubMenu("¶¼ÄÜ¸¶", 2, 5, 0, 0, 60, 2, szMenu);
 end
 
 --function LuaMenuFuncSel()

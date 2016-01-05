@@ -37,6 +37,7 @@ extern int CurrencyAmtToDisp(const char *, const char *, char *);
 extern int CommSetSuspend(uint unFlag);
 extern int ScanBarCode(char *pszTitle, char *pszContent, int nMax, char * pszBarCode, YESORNO cIsVerify);
 extern int DealQRCode(char *pszCodeUrl, char *pszAmount, char cTransType);
+extern int Inner_Scan(int , char * ,  int , char *, char *, YESORNO );
 
 #endif
 

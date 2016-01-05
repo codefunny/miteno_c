@@ -73,6 +73,9 @@ typedef struct
 	int nAdditionLen;		/**<附加流水内容长度*/
 	char sAddition[64];	/**<附加流水内容*/
 	char szAdvertisement[256];	/**<广告内容*/
+	char szTransName[32];		/**<交易名称*/
+
+	
 	int nAdditionLen2;		
 	char sAddition2[257];
 	char cBatchUpFlag;				/**<上送标志0－未上送，0xFD－已上送, 0xFE-上送被拒, 0xFF-上送失败, 其他数字-已上送次数*/

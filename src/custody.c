@@ -457,6 +457,7 @@ int CustodyChkRespon(STSYSTEM *pstSystem, char * psPack, int nLen)
 	ASSERT_FAIL(CustodyTlvGetValue(32, s_stCustodyTlv, pstSystem->szTag32, &nFieldLen));
 	ASSERT_FAIL(CustodyTlvGetValue(33, s_stCustodyTlv, pstSystem->szRealAmount, &nFieldLen));
 	ASSERT_FAIL(CustodyTlvGetValue(37, s_stCustodyTlv, pstSystem->szPayableAmount, &nFieldLen));
+	ASSERT_FAIL(CustodyTlvGetValue(38, s_stCustodyTlv, pstSystem->szTransName, &nFieldLen));
 	ASSERT_FAIL(CustodyTlvGetValue(95, s_stCustodyTlv, pstSystem->szAdvertisement, &nFieldLen));
 	ASSERT_FAIL(CustodyTlvGetValue(99, s_stCustodyTlv, pstSystem->szMac, &nFieldLen));
 	return APP_SUCC;

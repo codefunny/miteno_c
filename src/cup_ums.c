@@ -50,7 +50,7 @@ static void SetLedMode(EM_LEDMODE, EM_LEDMODE, EM_LEDMODE, EM_LEDMODE);
 static void ShowLight(void);
 static void CLoseLight(void);
 static void CheckImgApi(void);
-
+static int AppDoEvent();
 
 extern int NDK_ScrImgDestroy(char *);
 extern int NDK_ScrDispImg(int, int, int, int, char *);
@@ -499,65 +499,41 @@ void EnableDispDefault(void)
 	strcpy(szShowInfo, "欢迎使用!");
 	sprintf(szParamList, "|'%s '|'%s '|'%s'|", szSoftVer, szShowName, szShowInfo);	
 
-	PubClearAll();
-	ShowLightIdle();
-	PubLuaDisplay2("LuaEnableDispDefault", szParamList);
-
-	memset(szTran, 0, sizeof(szTran));
-	if(GetTieTieSwitchOnoff(TRANS_PRECREATE)== YES || GetTieTieSwitchOnoff(TRANS_CREATEANDPAY)== YES)
+	for(;;)
 	{
-		strcat(szTran, "  F1微信  ");
-	}
-	if (GetTieTieSwitchOnoff(TRANS_ALI_CREATEANDPAY)== YES || GetTieTieSwitchOnoff(TRANS_ALI_PRECREATE)== YES)
-	{
-		strcat(szTran, " F2支付宝 ");
-	}
-	else if(GetTieTieSwitchOnoff(TRANS_CREATEANDPAYBAIDU)== YES  || GetTieTieSwitchOnoff(TRANS_BAIDU_PRECREATE)== YES)
-	{
-		strcat(szTran, " F2百度 ");
-	}
-	
-	PubDisplayStrInline(1, 5, szTran);
-	PubUpdateWindow();
-
-	nKey = PubGetKeyCode(0);
-	
-	if ((nKey == KEY_F1)&&(GetTieTieSwitchOnoff(TRANS_PRECREATE)== YES || GetTieTieSwitchOnoff(TRANS_CREATEANDPAY)== YES))
-	{
-		if (GetVarIsHaveScanner() == YES)
-		{
-			MagBarcodePay();
-		}
-		else
-		{
-			MagScanQrCodePay();
-		}
-	}
-	else if (nKey == KEY_F2 && GetTieTieSwitchOnoff(TRANS_ALI_CREATEANDPAY)== YES)
-	{
-		if (GetVarIsHaveScanner() == YES)
-		{
-			MagAliBarcode();
-		}
-		else
-		{
-			MagAlipayScanQrCodePay();
-		}
-	}
-	else if (nKey == KEY_F2 && GetTieTieSwitchOnoff(TRANS_CREATEANDPAYBAIDU)== YES)
-	{
+		PubClearAll();
+		ShowLightIdle();
+		PubLuaDisplay2("LuaEnableDispDefault", szParamList);
 		
-		if (GetVarIsHaveScanner() == YES)
+		memset(szTran, 0, sizeof(szTran));
+		//if(GetTieTieSwitchOnoff(TRANS_ALLPAY_CREATEANDPAY)== YES || GetTieTieSwitchOnoff(TRANS_ALLPAY_PRECREATE)== YES)
 		{
-			MagBarcodeBaidu();
+			strcat(szTran, "1扫码 ");
 		}
-		else
+		//if (GetTieTieSwitchOnoff(TRANS_ALI_CREATEANDPAY)== YES || GetTieTieSwitchOnoff(TRANS_ALI_PRECREATE)== YES)
 		{
-			MagScanQrCodePayBaidu();
+			strcat(szTran, " 2刷卡 ");
 		}
+			strcat(szTran, " 3更多");
+		
+		PubDisplayStrInline(1, 5, szTran);
+		PubUpdateWindow();
+		
+		nKey = PubGetKeyCode(0);
+		
+		if (nKey == KEY_1)
+		{
+			MagAllpayBarcode();
+		}
+		else if (nKey == KEY_2)
+		{
+			AppDoEvent();
+		}
+		else if (nKey == KEY_3)
+		{
+			return ;
+		}	
 	}
-
-	
 }
 
 /*
@@ -567,6 +543,46 @@ void EnableDispDefault(void)
 int Ums_CheckMcVer(void)
 {
 	return APP_SUCC;
+}
+
+#define APPCALL_SDYY "银行卡　HYJR"      /*银行卡收单*/
+
+
+
+static int AppDoEvent()
+{
+	int nRet;
+	int nLen;
+	STCALLFUNCIN stCallFuncIn;
+	STCALLFUNCOUT stCallFuncOut;
+
+	
+	PubDebug("\r\n都能付调用收单\r\n");
+	memset(&stCallFuncIn,0,sizeof(STCALLFUNCIN));
+	memset(&stCallFuncOut,0,sizeof(STCALLFUNCOUT));
+
+	stCallFuncIn.cIsCommInit = YES;
+	CommDump();
+	stCallFuncIn.cFuncIndex = SALE_FUNC;
+	stCallFuncOut.cReturn = -1;
+	
+	/*调用*/
+	nRet = NDK_AppDoEvent((uchar *)APPCALL_SDYY, SALE_FUNC,		  \
+		&stCallFuncIn,sizeof(STCALLFUNCIN),  \
+		&stCallFuncOut, sizeof(STCALLFUNCOUT), &nLen);
+	CommDump();
+	SetControlCommInit();	 
+	CommInit();
+	if (nRet != APP_SUCC)
+	{
+		return APP_FAIL;
+	}
+	
+	if (nRet != APP_SUCC || stCallFuncOut.cReturn != 0) //函数执行没有成功
+	{
+		return APP_FAIL;
+	}
+	return nRet;
 }
 
 
