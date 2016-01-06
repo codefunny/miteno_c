@@ -532,7 +532,7 @@ int Inner_Scan(int nTimeOut, char * pszScanStr,  int nMax, char *pszContent, cha
 		return APP_FAIL;
 	}
 	
-	while(1)
+	for(;;)
 	{
 		nRet = PubKbHit();
 		if (nRet == KEY_ESC)
@@ -903,16 +903,11 @@ int ScanBarCode2(char *pszTitle, int nTimeOut , char * pszBarCode)
 }
 #endif
 
-//(char *pszTitle, int nTimeOut , char * pszBarCode)
 int ScanBarCode(char *pszTitle, char *pszContent, int nMax, char * pszBarCode, YESORNO cIsVerify)
 {
 	int nRet;
-	int nLen = 0;
-	int nAux;
-	int nKeycode;
 	int nTimeOut = 60;
 	char szBarCode[128];
-	char szBarCodeTmp[128];
 
 	PubClear2To4();
 	PubDisplayStr(DISPLAY_MODE_LEFT, 2, 1, pszContent);
@@ -921,99 +916,41 @@ int ScanBarCode(char *pszTitle, char *pszContent, int nMax, char * pszBarCode, Y
 
 	
 
-	while(1)
-	{
-		if(GetVarIsOutsideScanner() == YES)
-		{		
-			//按键
-			nKeycode = 0;
-			memset(szBarCode, 0, sizeof(szBarCode));
-			
-			nKeycode = PubKbHit();
-			if (nKeycode == KEY_ESC)
-			{
-				NDK_PortClose(nAux);
-				return APP_QUIT;
-			}
-			
-			if(PubIsDigitChar(nKeycode) == APP_SUCC)
-			{
-				szBarCode[0] = nKeycode;
-				if (PubInputDlg(pszTitle, pszContent, szBarCode, &nLen, 1, nMax, nTimeOut, INPUT_MODE_STRING) != APP_SUCC)
-				{
-					return APP_QUIT;
-				}
-				if (cIsVerify == YES)
-				{
-					memset(szBarCodeTmp, 0, sizeof(szBarCodeTmp));
-					if(PubInputDlg(pszTitle, "请再输入一次", szBarCodeTmp, &nLen, 1, nMax, nTimeOut, INPUT_MODE_STRING) != APP_SUCC)
-					{
-						return APP_QUIT;
-					}
-					if(strcmp(szBarCodeTmp, szBarCode) != 0)
-					{
-						PubMsgDlg(pszTitle, "两次输入号码不同", 0, 3 );
-						return APP_QUIT;
-					}
-				}
-				strcpy(pszBarCode, szBarCode);
-				return APP_SUCC;
-			}
-			else if(GetVarIsOutsideScanner() == YES)
-			{	
-				nAux = SCANAUX;
-				nRet = NDK_PortOpen(nAux, "9600");
-				NDK_PortClrBuf(nAux);
+	if(GetVarIsOutsideScanner() == YES)
+	{	
 
-				nRet = NDK_ERR;
-				nLen = 0;
-				
-				if (NDK_PortReadLen(nAux, &nLen) != NDK_OK)
-				{
-					NDK_PortClrBuf(nAux);
-				}
-				if(nLen > 0)
-				{
-					nRet = NDK_PortRead(nAux, sizeof(szBarCode) - 1, szBarCode, 100, &nLen);
-					//PrintDebugData(szBarCode, nLen);
-				}
-				
-				if(nRet == NDK_OK)
-				{
-					PubDelSymbolFromStr((uchar*)szBarCode, 0x0D);
-					PubDelSymbolFromStr((uchar*)szBarCode, 0x0A);
-					if (strlen(szBarCode) > nMax)
-					{
-						return APP_FAIL;
-					}
-					strcpy(pszBarCode, szBarCode);
-					NDK_PortClose(nAux);
-			
-					return APP_SUCC;
-				}
-			}
-		}
-		else
+		nRet = Outlay_Scan(nTimeOut, szBarCode, nMax, pszContent, pszTitle, cIsVerify);
+		if(nRet != APP_SUCC)
 		{
-			nRet = Inner_Scan(nTimeOut, szBarCode, nMax, pszContent, pszTitle, cIsVerify);
-			if(nRet != APP_SUCC)
-			{
-				return APP_QUIT;
-			}
-			PubDelSymbolFromStr((uchar*)szBarCode, 0x0D);
-			PubDelSymbolFromStr((uchar*)szBarCode, 0x0A);
-			if (strlen(szBarCode) > nMax)
-			{
-				return APP_FAIL;
-			}
-			strcpy(pszBarCode, szBarCode);
-			return APP_SUCC;
+			return APP_QUIT;
 		}
-		
-	}
-
-	return APP_FAIL;
+		PubDelSymbolFromStr((uchar*)szBarCode, 0x0D);
+		PubDelSymbolFromStr((uchar*)szBarCode, 0x0A);
+		if (strlen(szBarCode) > nMax)
+		{
+			return APP_FAIL;
+		}
+		strcpy(pszBarCode, szBarCode);
+		return APP_SUCC;
 	
+	}
+	else
+	{
+		nRet = Inner_Scan(nTimeOut, szBarCode, nMax, pszContent, pszTitle, cIsVerify);
+		if(nRet != APP_SUCC)
+		{
+			return APP_QUIT;
+		}
+		PubDelSymbolFromStr((uchar*)szBarCode, 0x0D);
+		PubDelSymbolFromStr((uchar*)szBarCode, 0x0A);
+		if (strlen(szBarCode) > nMax)
+		{
+			return APP_FAIL;
+		}
+		strcpy(pszBarCode, szBarCode);
+		return APP_SUCC;
+	}
+	return APP_FAIL;
 }
 
 
@@ -1222,5 +1159,89 @@ void BcdSub(uchar *Dest,uchar *Src,unsigned int Len)
     }   
 }     
 
+
+int Outlay_Scan(int nTimeOut, char * pszScanStr,  int nMax, char *pszContent, char *pszTitle, YESORNO cIsVerify)
+{
+	int nLen = 0;
+	int nRet;
+	int nAux;
+	int nTime;
+	time_t oldtime,changetime;
+	char szBarCode[256];
+	char szBarCodeTmp[128];
+	int nKeycode;
+
+	nAux = SCANAUX;
+	nRet = NDK_PortOpen(nAux, "9600");
+	NDK_PortClrBuf(nAux);
+	oldtime=time(NULL);
+
+	//按键
+	nKeycode = 0;
+	memset(szBarCode, 0, sizeof(szBarCode));
+	
+	for(;;)
+	{
+		nKeycode = PubKbHit();
+		if (nKeycode == KEY_ESC)
+		{
+			NDK_PortClose(nAux);
+			return APP_QUIT;
+		}
+		
+		if(PubIsDigitChar(nKeycode) == APP_SUCC)
+		{
+			szBarCode[0] = nKeycode;
+			if (PubInputDlg(pszTitle, pszContent, szBarCode, &nLen, 1, nMax, nTimeOut, INPUT_MODE_STRING) != APP_SUCC)
+			{
+				NDK_PortClose(nAux);
+				return APP_QUIT;
+			}
+			if (cIsVerify == YES)
+			{
+				memset(szBarCodeTmp, 0, sizeof(szBarCodeTmp));
+				if(PubInputDlg(pszTitle, "请再输入一次", szBarCodeTmp, &nLen, 1, nMax, nTimeOut, INPUT_MODE_STRING) != APP_SUCC)
+				{
+					NDK_PortClose(nAux);
+					return APP_QUIT;
+				}
+				if(strcmp(szBarCodeTmp, szBarCode) != 0)
+				{
+					PubMsgDlg(pszTitle, "两次输入号码不同", 0, 3 );
+					NDK_PortClose(nAux);
+					return APP_QUIT;
+				}
+			}
+			strcpy(pszScanStr, szBarCode);	
+			NDK_PortClose(nAux);
+			return APP_SUCC;
+		}
+			
+		nRet = NDK_ERR;
+		nLen = 0;
+		
+		if (NDK_PortReadLen(nAux, &nLen) != NDK_OK)
+		{
+			NDK_PortClrBuf(nAux);
+		}
+		if(nLen > 0)
+		{
+			nRet = NDK_PortRead(nAux, sizeof(szBarCode) - 1, szBarCode, 100, &nLen);
+			strcpy(pszScanStr, szBarCode);
+			NDK_PortClose(nAux);
+			NDK_SysBeep();
+			return APP_SUCC;
+		}
+
+		changetime = time(NULL);
+		nTime = changetime - oldtime;
+		if (nTime > nTimeOut)
+		{
+			NDK_PortClose(nAux);
+			return APP_TIMEOUT;
+		}
+	}
+	return APP_SUCC;
+}
 
 
